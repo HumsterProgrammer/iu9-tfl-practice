@@ -1,0 +1,2 @@
+После приведения подобных коммутативности конкатенации $(<.>)$ 
+$$N_i \to \varphi_1 N_i^{k_1}N_i + \varphi_2 N_i^{k_2}N_i + \dots + \varphi_{n-1} N_i^{k_{n-1}}N_i + \varphi_n, \varphi_i \text{ не соодержит } N_i$$
