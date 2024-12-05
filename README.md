@@ -9,6 +9,7 @@
 
 Полезные ссылки:
 - Математические символы и как их набирать: [https://oeis.org/wiki/List_of_LaTeX_mathematical_symbols
+- Полезная статья про набор формул: [https://habr.com/ru/articles/723564/]
 
 ## Обозначения
 ### Названия файлов
