@@ -44,23 +44,26 @@ digraph{
 	S -> SE [label="b, B/"]
 	SE -> SE [label="b,B/"]
 	SE -> S [label="b, C/"]
-	SE -> E [labe="e,Z0/Z0"]
+	SE -> E [label="e,Z0/Z0"]
 	}
 ```
-Итоговый МП-автомат нельзя назвать идеальным: действительно, язык, описываемый такой грамматикой, можно было бы определить следующим образом:
-$$
-\bigl\{\omega\mid \omega\in\{a,b\}^*\,\&\,\text{в каждом суффиксе }\omega\text{ не меньше букв }b\text{, чем }a\bigr\}
-$$
-Этот язык распознаётся очень простым МП-автоматом:
+Итоговый МП-автомат содержит недетерминированный $\varepsilon$-переход, влияющий на стек: без него можно было бы обойтись, перенеся недетерминизм на обработку $b$-переходов. Ниже выделено состояние $SS$ - начало разбора нетерминала $S$, не манипулирующее со стеком.
+
+:
 ```dot
 digraph{
 	rankdir=LR
 	node [shape=circle]
 	E [shape=doublecircle]
 	point [shape=point]
-	point -> S
-	S:n -> S:n [label="a, X/BX"]
-	S:s -> S:s [label="b, B/\n b, Z0/Z0"]
-	S -> E [label="e, Z0/Z0"]
+	point -> SS
+	SS -> SS [label="b"]
+	SS -> S [label="a, X/BX"]
+	S -> S [label="a, B/BB"]
+	S -> SE [label="b, B/\n"]
+	SE -> SE [label="b,B/\n"]
+	SE -> SS [label="b,X/X"]
+	SE -> E [label="e,Z0/Z0"]
+	SS -> E [label="e,Z0/Z0"]
 	}
 ```
