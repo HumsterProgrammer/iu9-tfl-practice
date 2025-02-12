@@ -27,7 +27,7 @@ digraph{
 ```
 Применим эту же идею для грамматики, содержащей правила $S\rightarrow a S b$, $S\rightarrow S b S$, $S\rightarrow \varepsilon$:
 $$\begin{array}{lll}
-S \rightarrow \underbrace{a}_{PUSH\;B} \overbrace{S}^{\text{после }a} \underbrace{b}_{POP\;B} &\qquad S \rightarrow \underbrace{\;}_{PUSH\;C} \overbrace{S}^{\text{после пустого шага}} \underbrace{b}_{POP\;C} \overbrace{S}^{\text{после }b} & \underbrace{S\rightarrow \varepsilon}_{\text{можно завершиться сразу в }S}
+S \rightarrow \underbrace{a}_{PUSH\;B} \overbrace{S}^{\text{после }a} \underbrace{b}_{POP\;B}\overbrace{\;}^{\text{после b?}} &\qquad S \rightarrow \underbrace{\;}_{PUSH\;C} \overbrace{S}^{\text{после пустого шага}} \underbrace{b}_{POP\;C} \overbrace{S}^{\text{после }b} & \underbrace{S\rightarrow \varepsilon}_{\text{можно завершиться сразу в }S}
 \end{array}
 $$
 Второе правило раскладывается по общей схеме, только видно, что открывающая скобка здесь отображается морфизмом в пустое слово. С первым чуть сложнее: если выписывать его полностью согласно отображению, оно должно было бы выглядеть примерно так: $S\rightarrow a S b S_E$, $S_E\rightarrow \varepsilon$. То есть после сбрасывания со стека символа $B$ мы должны перейти в "фантомное" состояние, в котором всё, что возможно сделать - это найти очередную "закрывающую скобку" (символ на вершине стека) и совершить переход согласно этой скобке.
@@ -38,12 +38,29 @@ digraph{
 	E [shape=doublecircle]
 	point [shape=point]
 	point -> S
-	S:n -> S:n [label="a, X/BX\n e,X/CX"]
+	S:n -> S:n [label="a, X/BX\n e, X/CX"]
 	S:s -> S:s [label="b, C/"]
 	S -> E [label="e, Z0/Z0"]
 	S -> SE [label="b, B/"]
 	SE -> SE [label="b,B/"]
 	SE -> S [label="b, C/"]
 	SE -> E [labe="e,Z0/Z0"]
+	}
+```
+Итоговый МП-автомат нельзя назвать идеальным: действительно, язык, описываемый такой грамматикой, можно было бы определить следующим образом:
+$$
+\bigl\{\omega\mid \omega\in\{a,b\}^*\,\&\,\text{в каждом суффиксе }\omega\text{ не меньше букв }b\text{, чем }a\bigr\}
+$$
+Этот язык распознаётся очень простым МП-автоматом:
+```dot
+digraph{
+	rankdir=LR
+	node [shape=circle]
+	E [shape=doublecircle]
+	point [shape=point]
+	point -> S
+	S:n -> S:n [label="a, X/BX"]
+	S:s -> S:s [label="b, B/\n b, Z0/Z0"]
+	S -> E [label="e, Z0/Z0"]
 	}
 ```
