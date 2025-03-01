@@ -88,3 +88,39 @@ S \rightarrow \underbrace{a_1}_{PUSH\;B_a} \overbrace{S}^{\text{после }a_1}
 \end{array}
 $$
 Заметим, что $follow(S)=follow(S_E)=\{b_1,b_2,\$\}$. При этом переход по $b_1$ возвращает автомат в состояние $S_E$, переход под $b_2$ переводит его в $S$, переход по $\$$ ведёт в финальное состояние, причём этот переход возможен лишь тогда, когда все скобки закрыты (стек пуст).
+
+> [!example] Пример (Вариант 1, Задача 2)
+> Вспомним грамматику и линеаризуем её.
+> $$\begin{array}{lll}
+S \rightarrow \underbrace{b_1}_{PUSH\;A_b} \overbrace{T}^{\text{после }b_1} \underbrace{a_1}_{POP\;A_b}\overbrace{T}^{\text{после }a_1} &\qquad S \rightarrow \underbrace{B}_{PUSH\;B_\varepsilon} B \overbrace{S_E}^{\text{завершение }S}\\  T\rightarrow \overbrace{b T}^{\text{регулярное условие}} & T\rightarrow \overbrace{a_2 S}^{\text{смена состояния}} & T\rightarrow a_3 \overbrace{T_E}^{\text{завершение }T} \\ B\rightarrow \overbrace{aba^*}^{\text{регулярный язык}}
+\end{array}
+> $$
+>
+ 
+ Теперь построим $follow$-множества:
+ - $follow(T) = follow(S)=\{a_2, \$\}$
+ И на основе всего перечисленного PDA:
+
+```dot
+digraph{
+	rankdir=LR
+	node [shape=circle]
+	E [shape=doublecircle]
+	point [shape=point]
+	point -> S
+	S -> T [label="b, X/AX"]
+	S -> B0 [label="a, X/BX"]
+	T -> T [label="b\n a, A/"]
+	T -> TE [label="a"]
+	T -> S [label="a"]
+	B0 -> B [label="b"]
+	B -> B0 [label="a, B/"]
+	B -> B [label="a"]
+	B -> T [label="a, A/"]
+	B -> E [label="e, Z0/Z0"]
+	TE -> T [label="a, A/"]
+	TE -> E [label="e, Z0/Z0"]
+	}
+```
+
+Недетерминизм в данном PDA можно уменьшить, если более аккуратно обрабатывать разбор правила $S\rightarrow BB$ (добавить дополнительные состояния, учитывающие, какая часть регулярного выражения $aba^+ ba^*$ уже прочитана).  
