@@ -1,0 +1,126 @@
+Напомним теорему Шютценберже о контекстно-свободных языках.
+
+> [!theorem] Теорема Хомского-Шютценберже о представлении КС-языков
+> Каждый контекстно-свободный язык является гомоморфным образом пересечения языка Дика с регулярным языком.
+
+Эта теорема может быть применимой при построении магазинных автоматов по грамматикам. Действительно:
+1. язык Дика с $n$ скобками легко представить магазинным автоматом.
+2. регулярный язык определяет структуру переходов в автомате, не влияя на стек.
+3. построить гомоморфный образ МП-автомата также можно алгоритмически.
+Чтобы понять идею метода, рассмотрим для начала собственно язык Дика в алфавите $\{a,b\}$ и самую простую грамматику для него.
+$$\begin{array}{lll}
+S \rightarrow \underbrace{a}_{PUSH\;B} \hspace{-1.5ex}\overbrace{S}^{\text{после }a} \hspace{-1.5ex}\underbrace{b}_{POP\;B} \hspace{-1.5ex}\overbrace{S}^{\text{после }b} & \qquad\qquad & \underbrace{S\rightarrow \varepsilon}_{\text{можно завершиться сразу в }S}
+\end{array}
+$$
+Если увидеть, что пара $a$, $b$ определяет поведение стека, а нетерминальные символы - состояния, куда следует перейти после определённых действий со стеком, то построить по этой грамматике МП-автомат не составляет труда.
+```dot
+digraph{
+	rankdir=LR
+	node [shape=circle]
+	E [shape=doublecircle]
+	point [shape=point]
+	point -> S
+	S -> S [label="a, X/BX"]
+	S:s -> S:s [label="b, B/"]
+	S -> E [label="e, Z0/Z0"]
+	}
+```
+Применим эту же идею для грамматики, содержащей правила $S\rightarrow a S b$, $S\rightarrow S b S$, $S\rightarrow \varepsilon$:
+$$\begin{array}{lll}
+S \rightarrow \underbrace{a}_{PUSH\;B}\hspace{-1.5ex}\overbrace{S}^{\text{после }a} \hspace{-1.5ex}\underbrace{b}_{POP\;B}\hspace{-1.5ex}\overbrace{\;}^{\text{после b?}} &\qquad S \rightarrow \underbrace{\;}_{PUSH\;C}\hspace{-5.5ex}\overbrace{S}^{\text{после пустого шага}} \hspace{-3ex}\underbrace{b}_{POP\;C}\hspace{-1.5ex}\overbrace{S}^{\text{после }b} & \underbrace{S\rightarrow \varepsilon}_{\text{можно завершиться сразу в }S}
+\end{array}
+$$
+Второе правило раскладывается по общей схеме, только видно, что открывающая скобка здесь отображается морфизмом в пустое слово. С первым чуть сложнее: если выписывать его полностью согласно отображению, оно должно было бы выглядеть примерно так: $S\rightarrow a S b S_E$, $S_E\rightarrow \varepsilon$. То есть после сбрасывания со стека символа $B$ мы должны перейти в "фантомное" состояние, в котором всё, что возможно сделать - это найти очередную "закрывающую скобку" (символ на вершине стека) и совершить переход согласно этой скобке.
+```dot
+digraph{
+	rankdir=LR
+	node [shape=circle]
+	E [shape=doublecircle]
+	point [shape=point]
+	point -> S
+	S:n -> S:n [label="a, X/BX\n e, X/CX"]
+	S:s -> S:s [label="b, C/"]
+	S -> E [label="e, Z0/Z0"]
+	S -> SE [label="b, B/"]
+	SE -> SE [label="b,B/"]
+	SE -> S [label="b, C/"]
+	SE -> E [label="e,Z0/Z0"]
+	}
+```
+Итоговый МП-автомат содержит недетерминированный $\varepsilon$-переход, влияющий на стек: без него можно было бы обойтись, перенеся недетерминизм на обработку $b$-переходов. Ниже выделено состояние $SS$ - начало разбора нетерминала $S$, не манипулирующее со стеком.
+
+:
+```dot
+digraph{
+	rankdir=LR
+	node [shape=circle]
+	E [shape=doublecircle]
+	point [shape=point]
+	point -> SS
+	SS -> SS [label="b"]
+	SS -> S [label="a, X/BX"]
+	S -> S [label="a, B/BB"]
+	S -> SE [label="b, B/\n"]
+	SE -> SE [label="b,B/\n"]
+	SE -> SS [label="b,X/X"]
+	SE -> E [label="e,Z0/Z0"]
+	SS -> E [label="e,Z0/Z0"]
+	}
+```
+
+> [!tip] Алгоритм построения PDA по КС-грамматике посредством отображения Хомского-Шютценберже
+> Предполагаем, что в правой части каждого правила может быть не более двух нетерминалов (если их больше, то правила можно разбить, либо применить другую эвристику).
+> Рассмотрим правило $N_1 \rightarrow \gamma_1 N_2 \gamma_2 N_3 \gamma_3$. Тогда:
+> 1. Находясь в состоянии $N_1$ и прочитав $\gamma_1$, "открываем скобку" для $N_2$: закладываем на стек символ $B_{\gamma_1}$ и переходим в состояние $N_2$.
+> 2. Находясь в конце состояния $N_2$ и прочитав $\gamma_2$, располагая символом $B_{\gamma_1}$ на вершине стека, "закрываем скобку" и переходим в состояние $N_3$.
+> 3. Находясь в конце состояния $N_3$ и прочитав $\gamma_3$, переходим в конец состояния $N_1$.
+> 
+> Далее для каждого нетерминала $N_i$ определяем по грамматике множество "закрывающих скобок", которые могут после него следовать. Это множество определяется его $Follow$-множеством на линеаризованной исходной КС-грамматике и задаёт тот регулярный язык, с которым следует пересечь наше построение. 
+
+Если правило короче (содержит только один нетерминал или не содержит их вовсе), можно пропустить соответствующие шаги. Например, правило вида $N_1\rightarrow N_2 \gamma_2$ определяет следующие шаги:
+> 1. Находясь в состоянии $N_1$, можно перейти в состояние $N_2$.
+> 2. Находясь в конце состояния $N_2$ и прочитав $\gamma_2$, переходим в конец состояния $N_1$.
+
+Теперь применим описанный алгоритм по шагам к уже знакомой грамматике, которую заранее линеаризуем (только по терминальным символам):
+
+$$\begin{array}{lll}
+S \rightarrow \underbrace{a_1}_{PUSH\;B_a}\hspace{-1.5ex}\overbrace{S}^{\text{после }a_1}\hspace{-1.5ex}\underbrace{b_1}_{POP\;B_a}\hspace{-1.5ex}\overbrace{S_E}^{\text{после }b_1} &\qquad S \rightarrow \underbrace{\varepsilon}_{PUSH\;B_\varepsilon} \hspace{-5.5ex}\overbrace{S}^{\text{после пустого шага}}\hspace{-3ex} \underbrace{b_2}_{POP\;B_\varepsilon} \hspace{-1.5ex}\overbrace{S}^{\text{после }b_2} & \underbrace{S\rightarrow S_E}_{\text{можно завершиться сразу в }S}
+\end{array}
+$$
+Заметим, что $follow(S)=follow(S_E)=\{b_1,b_2,\$\}$. При этом переход по $b_1$ возвращает автомат в состояние $S_E$, переход под $b_2$ переводит его в $S$, переход по $\$$ ведёт в финальное состояние, причём этот переход возможен лишь тогда, когда все скобки закрыты (стек пуст).
+
+### Пример (Вариант 1, Задача 2)
+
+Вспомним грамматику и линеаризуем её.
+$$\begin{array}{lll}
+S \rightarrow \underbrace{b_1}_{PUSH\;A_b}\hspace{-2ex} \overbrace{T}^{\text{после }b_1} \hspace{-2ex}\underbrace{a_1}_{POP\;A_b}\hspace{-2ex}\overbrace{T}^{\text{после }a_1} & S \rightarrow \underbrace{B}_{PUSH\;B_\varepsilon}\hspace{-2ex} B \overbrace{S_E}^{\text{после }S} & B\rightarrow\hspace{-2ex} \underbrace{aba^*}_{\text{регулярный язык}}\\\\\\  T\rightarrow \overbrace{b T}^{\begin{array}{l}\text{регулярное}\\\text{условие}\end{array}} & T\rightarrow \overbrace{a_2 S}^{\begin{array}{l}\text{смена}\\\text{состояния}\end{array}}\qquad\qquad & T\rightarrow a_3 \hspace{-1ex}\overbrace{T_E}^{\text{после }T} \\ &
+\end{array}
+ $$
+ 
+ Теперь построим $follow$-множества:
+ - $follow(T) = follow(S)=\{a_2, \$\}$
+ И на основе всего перечисленного PDA:
+
+```dot
+digraph{
+	rankdir=LR
+	node [shape=circle]
+	E [shape=doublecircle]
+	point [shape=point]
+	point -> S
+	S -> T [label="b, X/AX"]
+	S -> B0 [label="a, X/BX"]
+	T -> T [label="b\n a, A/"]
+	T -> TE [label="a"]
+	T -> S [label="a"]
+	B0 -> B [label="b"]
+	B -> B0 [label="a, B/"]
+	B -> B [label="a"]
+	B -> T [label="a, A/"]
+	B -> E [label="e, Z0/Z0"]
+	TE -> T [label="a, A/"]
+	TE -> E [label="e, Z0/Z0"]
+	}
+```
+
+Недетерминизм в данном PDA можно уменьшить, если более аккуратно обрабатывать разбор правила $S\rightarrow BB$ (добавить дополнительные состояния, учитывающие, какая часть регулярного выражения $aba^+ ba^*$ уже прочитана).  
