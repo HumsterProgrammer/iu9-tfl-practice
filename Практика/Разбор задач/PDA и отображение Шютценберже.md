@@ -98,7 +98,7 @@ S \rightarrow \underbrace{b_1}_{PUSH\;A_b}\hspace{-2ex} \overbrace{T}^{\text{п�
  $$
  
  Теперь построим $follow$-множества:
- - $follow(T) = follow(S)=\{a_2, \$\}$
+ - $follow(T) = follow(S)=\{a_1, \$\}$
  И на основе всего перечисленного PDA:
 
 ```dot
