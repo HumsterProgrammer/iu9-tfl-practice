@@ -93,7 +93,7 @@ $$
 
 Вспомним грамматику и линеаризуем её.
 $$\begin{array}{lll}
-S \rightarrow \underbrace{b_1}_{PUSH\;A}\hspace{-2ex} \overbrace{T}^{\text{после }b_1} \hspace{-2ex}\underbrace{a_1}_{POP\;A}\hspace{-2ex}\overbrace{T}^{\text{после }a_1} & S \rightarrow \underbrace{\;}_{PUSH\;B} \hspace{-1ex}B \underbrace{\;}_{POP\;B}\hspace{-0.5ex} B \overbrace{S_E}^{\text{после }S} & B\rightarrow\hspace{-2ex} \underbrace{a_4 ba_5^*}_{\text{регулярный язык}}\\\\\\  T\rightarrow \overbrace{b T}^{\begin{array}{l}\text{регулярное}\\\text{условие}\end{array}} & T\rightarrow \overbrace{a_2 S}^{\begin{array}{l}\text{смена}\\\text{состояния}\end{array}}\qquad\qquad & T\rightarrow a_3 \hspace{-1ex}\overbrace{T_E}^{\text{после }T} \\ &
+S \rightarrow \underbrace{b_1}_{PUSH\;A}\hspace{-2ex} \overbrace{T}^{\text{после }b_1} \hspace{-2ex}\underbrace{a_1}_{POP\;A}\hspace{-2ex}\overbrace{T}^{\text{после }a_1} & S \rightarrow \underbrace{\;}_{PUSH\;B} \hspace{-1ex}B \underbrace{\;}_{POP\;B}\hspace{-0.5ex} B \overbrace{S_E}^{\text{после }S} & B\rightarrow\hspace{-2ex} \underbrace{a_4 b_2 a_5^*}_{\text{регулярный язык}}\\\\\\  T\rightarrow \overbrace{b_3 T}^{\begin{array}{l}\text{регулярное}\\\text{условие}\end{array}} & T\rightarrow \overbrace{a_2 S}^{\begin{array}{l}\text{смена}\\\text{состояния}\end{array}}\qquad\qquad & T\rightarrow a_3 \hspace{-1ex}\overbrace{T_E}^{\text{после }T} \\ &
 \end{array}
  $$
  
