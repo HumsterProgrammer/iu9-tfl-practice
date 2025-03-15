@@ -84,7 +84,7 @@ digraph{
 Теперь применим описанный алгоритм по шагам к уже знакомой грамматике, которую заранее линеаризуем (только по терминальным символам):
 
 $$\begin{array}{lll}
-S \rightarrow \underbrace{a_1}_{PUSH\;B_a}\hspace{-1.5ex}\overbrace{S}^{\text{после }a_1}\hspace{-1.5ex}\underbrace{b_1}_{POP\;B_a}\hspace{-1.5ex}\overbrace{S_E}^{\text{после }b_1} &\qquad S \rightarrow \underbrace{\varepsilon}_{PUSH\;B_\varepsilon} \hspace{-5.5ex}\overbrace{S}^{\text{после пустого шага}}\hspace{-3ex} \underbrace{b_2}_{POP\;B_\varepsilon} \hspace{-1.5ex}\overbrace{S}^{\text{после }b_2} & \underbrace{S\rightarrow S_E}_{\text{можно завершиться сразу в }S}
+S \rightarrow \underbrace{a_1}_{PUSH\;B}\hspace{-1.5ex}\overbrace{S}^{\text{после }a_1}\hspace{-1.5ex}\underbrace{b_1}_{POP\;B}\hspace{-1.5ex}\overbrace{S_E}^{\text{после }b_1} &\qquad S \rightarrow \underbrace{\varepsilon}_{PUSH\;C} \hspace{-5.5ex}\overbrace{S}^{\text{после пустого шага}}\hspace{-3ex} \underbrace{b_2}_{POP\;C} \hspace{-1.5ex}\overbrace{S}^{\text{после }b_2} & \underbrace{S\rightarrow S_E}_{\text{можно завершиться сразу в }S}
 \end{array}
 $$
 Заметим, что $follow(S)=follow(S_E)=\{b_1,b_2,\$\}$. При этом переход по $b_1$ возвращает автомат в состояние $S_E$, переход под $b_2$ переводит его в $S$, переход по $\$$ ведёт в финальное состояние, причём этот переход возможен лишь тогда, когда все скобки закрыты (стек пуст).
@@ -93,7 +93,7 @@ $$
 
 Вспомним грамматику и линеаризуем её.
 $$\begin{array}{lll}
-S \rightarrow \underbrace{b_1}_{PUSH\;A_b}\hspace{-2ex} \overbrace{T}^{\text{после }b_1} \hspace{-2ex}\underbrace{a_1}_{POP\;A_b}\hspace{-2ex}\overbrace{T}^{\text{после }a_1} & S \rightarrow \underbrace{B}_{PUSH\;B_\varepsilon}\hspace{-2ex} B \overbrace{S_E}^{\text{после }S} & B\rightarrow\hspace{-2ex} \underbrace{aba^*}_{\text{регулярный язык}}\\\\\\  T\rightarrow \overbrace{b T}^{\begin{array}{l}\text{регулярное}\\\text{условие}\end{array}} & T\rightarrow \overbrace{a_2 S}^{\begin{array}{l}\text{смена}\\\text{состояния}\end{array}}\qquad\qquad & T\rightarrow a_3 \hspace{-1ex}\overbrace{T_E}^{\text{после }T} \\ &
+S \rightarrow \underbrace{b_1}_{PUSH\;A}\hspace{-2ex} \overbrace{T}^{\text{после }b_1} \hspace{-2ex}\underbrace{a_1}_{POP\;A}\hspace{-2ex}\overbrace{T}^{\text{после }a_1} & S \rightarrow \underbrace{\;}_{PUSH\;B} \hspace{-1ex}B \underbrace{\;}_{POP\;B}\hspace{-0.5ex} B \overbrace{S_E}^{\text{после }S} & B\rightarrow\hspace{-2ex} \underbrace{a_4 b_2 a_5^*}_{\text{регулярный язык}}\\\\\\  T\rightarrow \overbrace{b_3 T}^{\begin{array}{l}\text{регулярное}\\\text{условие}\end{array}} & T\rightarrow \overbrace{a_2 S}^{\begin{array}{l}\text{смена}\\\text{состояния}\end{array}}\qquad\qquad & T\rightarrow a_3 \hspace{-1ex}\overbrace{T_E}^{\text{после }T} \\ &
 \end{array}
  $$
  
@@ -123,4 +123,5 @@ digraph{
 	}
 ```
 
-Недетерминизм в данном PDA можно уменьшить, если более аккуратно обрабатывать разбор правила $S\rightarrow BB$ (добавить дополнительные состояния, учитывающие, какая часть регулярного выражения $aba^+ ba^*$ уже прочитана).  
+Единственная вольность, которую мы допустили в этом PDA относительно конструкции Шютценберже, - это перенос действий со стековым символом $B$ с чтения пустого слова на чтение первой буквы языка нетерминала $B$, а именно $a$. Мы могли позволить себе такую вольность, поскольку $first(B)=\{a_4\}$, то есть является синглетоном (множеством, содержащим единственный элемент). Тем самым, нет никакой неоднозначности в первом действии PDA при разборе языка нетерминала $B$.
+Недетерминизм в данном PDA можно дополнительно уменьшить, если более аккуратно обрабатывать разбор правила $S\rightarrow BB$ (добавить дополнительные состояния, учитывающие, какая часть регулярного выражения $aba^+ ba^*$ уже прочитана).  
