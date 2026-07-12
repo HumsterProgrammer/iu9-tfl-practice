@@ -22,7 +22,7 @@ digraph{
 	point -> S
 	S -> S [label="a, X/BX"]
 	S:s -> S:s [label="b, B/"]
-	S -> E [label="e, Z0/Z0"]
+	S -> E [label="ε, Z₀/Z₀"]
 	}
 ```
 Применим эту же идею для грамматики, содержащей правила $S\rightarrow a S b$, $S\rightarrow S b S$, $S\rightarrow \varepsilon$:
@@ -38,13 +38,13 @@ digraph{
 	E [shape=doublecircle]
 	point [shape=point]
 	point -> S
-	S:n -> S:n [label="a, X/BX\n e, X/CX"]
+	S:n -> S:n [label="a, X/BX\n ε, X/CX"]
 	S:s -> S:s [label="b, C/"]
-	S -> E [label="e, Z0/Z0"]
-	S -> SE [label="b, B/"]
-	SE -> SE [label="b,B/"]
-	SE -> S [label="b, C/"]
-	SE -> E [label="e,Z0/Z0"]
+	S -> E [label="ε, Z₀/Z₀"]
+	S -> Sᴇ [label="b, B/"]
+	Sᴇ -> Sᴇ [label="b,B/"]
+	Sᴇ -> S [label="b, C/"]
+	Sᴇ -> E [label="ε,Z₀/Z₀"]
 	}
 ```
 Итоговый МП-автомат содержит недетерминированный $\varepsilon$-переход, влияющий на стек: без него можно было бы обойтись, перенеся недетерминизм на обработку $b$-переходов. Ниже выделено состояние $SS$ - начало разбора нетерминала $S$, не манипулирующее со стеком.
@@ -60,11 +60,11 @@ digraph{
 	SS -> SS [label="b"]
 	SS -> S [label="a, X/BX"]
 	S -> S [label="a, B/BB"]
-	S -> SE [label="b, B/\n"]
-	SE -> SE [label="b,B/\n"]
-	SE -> SS [label="b,X/X"]
-	SE -> E [label="e,Z0/Z0"]
-	SS -> E [label="e,Z0/Z0"]
+	S -> Sᴇ [label="b, B/\n"]
+	Sᴇ -> Sᴇ [label="b,B/\n"]
+	Sᴇ -> SS [label="b,X/X"]
+	Sᴇ -> E [label="ε,Z₀/Z₀"]
+	SS -> E [label="ε,Z₀/Z₀"]
 	}
 ```
 
@@ -109,17 +109,17 @@ digraph{
 	point [shape=point]
 	point -> S
 	S -> T [label="b, X/AX"]
-	S -> B0 [label="a, X/BX"]
+	S -> B₀ [label="a, X/BX"]
 	T -> T [label="b\n a, A/"]
-	T -> TE [label="a"]
+	T -> Tᴇ [label="a"]
 	T -> S [label="a"]
-	B0 -> B [label="b"]
-	B -> B0 [label="a, B/"]
+	B₀ -> B [label="b"]
+	B -> B₀ [label="a, B/"]
 	B -> B [label="a"]
 	B -> T [label="a, A/"]
-	B -> E [label="e, Z0/Z0"]
-	TE -> T [label="a, A/"]
-	TE -> E [label="e, Z0/Z0"]
+	B -> E [label="ε, Z₀/Z₀"]
+	Tᴇ -> T [label="a, A/"]
+	Tᴇ -> E [label="ε, Z₀/Z₀"]
 	}
 ```
 
